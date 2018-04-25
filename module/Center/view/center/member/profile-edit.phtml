@@ -1,0 +1,145 @@
+<?php
+    //print_r($this->illnesses);
+
+    $this->headTitle()->prepend($member->name.' '.$member->surname.' : : ');
+    $this->headScript()->prependFile($this->basePath('js/avatar_cropbox.js'));
+    
+    $form = $this->form;
+    $form->prepare();
+    $form->setAttribute('action', $this->url(NULL, array('controller' => 'Member', 'action' => 'processProfileEdit')));
+?>
+    
+
+<div class="container">
+    <div class="notification-area">
+        <?php if ($this->success): ?>
+            <p class="top-notification top-success">Edycja profilu zakończona powodzeniem.</p>
+        <?php endif ?>
+            
+        <?php if ($this->error): ?>
+            <p class="top-notification top-error">Edycja profilu zakończona niepowodzeniem.</p>
+        <?php endif ?>
+    </div>
+    
+    <div class="page-header">
+        <p><a class="my-light-link" href="/center/index/<?=$member->id?>"><span class="glyphicon glyphicon-menu-left"></span> powrót do profilu</a></p>
+        <h2>Edycja profilu <small><?php echo $member->name.'&nbsp;'.$member->surname?></small></h2>
+    </div>
+
+    <ul class="nav nav-tabs" style="margin-bottom:20px">
+        <li class="<?php if ($this->context == 'profile') echo 'active ' ?>" role="presentation">
+            <a href="/center/member/profile-edit/<?=$member->id?>/profile">Profil</a>
+        </li>
+        <li class="<?php if ($this->context == 'illness') echo 'active ' ?>" role="presentation">
+            <a href="/center/member/profile-edit/<?=$member->id?>/illness">Dolegliwości</a>
+        </li>
+    </ul>
+    
+<?php
+            switch($this->context) {
+                case 'profile':
+?>
+                    <div class="control-group">
+                        <label class="control-label">Zdjęcie <span class="loading_avatar" style="display:none"> - wysyłanie <img src="/img/live_chat/chat_loading.gif" alt="loading-avatar"/> </span></label>
+                        <div class="controls">
+                            <div class="imageBox disabled" style="background-image:url('<?=$this->avatar?>')">
+
+                                <div class="thumbBox disabled"></div>
+                                <div class="spinner" style="display: none">Proszę czekać...</div>
+                            </div>
+                            <div class="action">
+                                <input type="file" name="avatar" id="file" style="display:inline-block;width:85px" class="custom-file-input change btn btn-default" accept="image/*">
+                                <div class="btn-group" role="group">
+                                    <input type="button" class="btn btn-default" id="btnZoomIn" value="+">
+                                    <input type="button" class="btn btn-default" id="btnZoomOut" value="-">
+                                </div>
+                                <input type="button" class="btn btn-success" id="btnCrop" value="Akceptuj">
+                            </div>
+                            <div class="cropped">
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                <?php echo $this->form()->openTag($form); ?>
+                    <fieldset>
+                        <?=$this->formElement($form->get('id'))?>
+                        <input name="context" type="hidden" value="<?=$this->context?>">
+                        
+                        <div class="control-group">
+                            <label class="control-label"><?=$this->formLabel($form->get('name'))?></label>
+                            <div class="controls">
+                                <?=$this->formElement($form->get('name'))?>
+                                <?=$this->formElementErrors($form->get('name'), array('class' => "valid-errors"))?>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label"><?=$this->formLabel($form->get('surname'))?></label>
+                            <div class="controls">
+                                <?=$this->formElement($form->get('surname'))?>
+                                <?=$this->formElementErrors($form->get('surname'), array('class' => "valid-errors"))?>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label"><?=$this->formLabel($form->get('sex'))?></label>
+                            <div class="controls">
+                                <?=$this->formElement($form->get('sex'))?>
+                                <?=$this->formElementErrors($form->get('sex'), array('class' => "valid-errors"))?>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label"><?=$this->formLabel($form->get('birth'))?> <span style="color:grey;font-weight:normal">(rrrr-mm-dd)</span></label>
+                            <div class="controls">
+                                <?=$this->formElement($form->get('birth'))?>
+                                <?=$this->formElementErrors($form->get('birth'), array('class' => "valid-errors"))?>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label"></label>
+                            <div class="controls">
+                                <?=$this->formElement($form->get('submit'))?>
+                                <?=$this->formElementErrors($form->get('submit'))?>
+                            </div>
+                        </div>
+                    </fieldset>
+                <?php echo $this->form()->closeTag($form); ?>
+<?php
+                break;
+                case 'illness':
+                    $this->headTitle()->prepend('Dolegliwości : : ');
+?>                 
+                <?php echo $this->form()->openTag($form); ?>
+                    <fieldset>
+                        <?=$this->formElement($form->get('id')->setValue($member->id))?>
+                        <input name="context" type="hidden" value="<?=$this->context?>">
+
+                        <div class="control-group">
+                            <div class="controls illness-checkboxes">
+                                <?=$this->formElement($form->get('illnesses'))?>
+                                <?=$this->formElementErrors($form->get('illnesses'), array('class' => "valid-errors"))?>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top:50px;" class="control-group">
+                            <label class="control-label"></label>
+                            <div class="controls">
+                                <?=$this->formElement($form->get('submit'))?>
+                                <?=$this->formElementErrors($form->get('submit'))?>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                <?php echo $this->form()->closeTag($form); ?>
+<?php
+                break;
+            }
+?>
+    
+    
+
+</div>

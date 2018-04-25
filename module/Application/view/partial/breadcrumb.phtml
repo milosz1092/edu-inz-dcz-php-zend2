@@ -1,0 +1,36 @@
+<ul class="breadcrumb" style="border-radius:0;margin-bottom:0;display:inline-block;background:none !important;">
+    <?php
+    // iterate through the pages
+    foreach ($this->pages as $key => $page):
+        ?>
+        <li>
+            <?php
+            // if this isn't the last page, add a link and the separator
+            if ($key < count($this->pages) - 1):
+                ?>
+                    <?php
+                    // if this isn't the last page, add a link and the separator
+                    if ($page->getHref() == '/'):
+                        ?>
+                        <a href="<?php echo $page->getHref(); ?>"><span style="" class="glyphicon glyphicon-home" aria-hidden="true"></a>
+                    <?php else: ?>
+                        <a href="<?php echo $page->getHref(); ?>"><?php echo $page->getLabel(); ?></a>
+                    <?php endif; ?>
+            <?php
+            // otherwise, just output the name
+            else:
+            ?>
+                    <?php
+                    // if this isn't the last page, add a link and the separator
+                    if ($page->getHref() == '/'):
+                        ?>
+                        <span style="" class="glyphicon glyphicon-home" aria-hidden="true">
+                    <?php else: ?>
+                        <?php echo $page->getLabel(); ?>
+                    <?php endif; ?> 
+                        
+                
+            <?php endif; ?>
+        </li>
+    <?php endforeach; ?>
+</ul>

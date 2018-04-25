@@ -1,0 +1,79 @@
+<?php
+    use Application\Functions\DateTimeExchange;
+?>
+
+<?php if ($this->deleteSuccess): ?>
+    <p class="top-notification top-success">Usuwanie wpisu zakończone powodzeniem.</p>
+<?php endif ?>
+    
+<?php if (isset($this->deleteSuccess) && $this->deleteSuccess == false): ?>
+    <p class="top-notification top-error">Nie udało się usunąć wpisu. Możliwe, że usunięto go wcześniej.</p>
+<?php endif ?>
+    
+<div class="page-header">
+  <h2>Blog <small>Zarządzanie</small></h2>
+</div>
+
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Wszystkie wpisy</div>
+
+    <table class="entry-table table">
+        <thead>
+            <tr>    
+
+                    <th>Tytuł</th>
+                    <th>Dział</th>
+                    <th>Autor</th>
+                    <th>Dodano</th>
+                    <th>&nbsp;</th>
+
+            </tr>
+        </thead>
+        <?php
+        foreach ($this->entries_paginator as $row) {
+                $entry_visible = ($row->published) ? 'open' : 'close';
+                
+                $date_time = new DateTimeExchange($row->created);
+        ?>
+            <tr>
+                <td><?=$row->title?></td>
+                <td><?php if ($row->section_id) echo ucfirst($this->entrySectionTable->getEntrySection($row->section_id)->name); else echo 'brak';?></td>
+                <td><?=$this->userTable->getUser($row->author)->email?></td>
+                <td><?=$date_time->day?> / <?=$date_time->month?> / <?=$date_time->year?></td>
+                <td>
+                    <div>
+                    <form style="min-width:180px;" class="form-horizontal" action="<?=$_SERVER['REQUEST_URI']?>" method="POST">
+                        <a href="/admin/blog/edit-entry/<?=$row->id?>" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edytuj</a>
+                        <a href="/blog/show/<?=$row->id?>" class="btn btn-default" role="button"><span class="glyphicon glyphicon-eye-<?=$entry_visible?>" aria-hidden="true"></span></a>
+                        <input type="hidden" name="entry-id" value="<?=$row->id?>" />
+                        <button onclick="return confirm('Czy na pewno chcesz usunąć wpis?');" type="submit" name="delete-entry" class="btn btn-warning">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                        </button>
+                    </form>
+                    </div>
+                </td>
+            </tr>
+        <?php
+        }
+        ?>
+    </table>
+    
+</div>
+    <a href="/admin/blog/add-entry" class="btn btn-success" role="button"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Dodaj</a> 
+
+
+<div style="clear:both" class="row">
+<?php
+    if ($this->entries_paginator->getTotalItemCount() > $this->entries_paginator->getItemCountPerPage()) {
+        
+        echo $this->paginationControl(
+
+        $this->entries_paginator, 'all', 'partial/paginator.phtml',
+            array(
+                'route' => 'admin/blog'
+            )
+        );
+    }
+ ?>
+</div>

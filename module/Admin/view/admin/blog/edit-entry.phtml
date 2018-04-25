@@ -1,0 +1,115 @@
+<?php
+    $this->headLink()->appendStylesheet('/css/my_forms.css');
+
+    $this->headScript()->appendFile('/js/chosen.jquery.js');
+    $this->headScript()->appendFile('/js/my_chosen.js');
+    $this->headLink()->appendStylesheet('/css/chosen.css');
+    
+    $this->headScript()->appendFile('/js/filemanager.js');
+    
+    $this->headScript()->appendFile('/js/tinymce/tinymce.min.js');
+    $this->headScript()->appendFile('/js/tinymce.js');
+
+    $form = $this->form;
+    $form->prepare();
+    $form->setAttribute('action', '/admin/blog/processEditEntry');
+
+
+?>
+
+<div class="container">
+    <?php if ($this->error): ?>
+        <p class="top-notification top-error">Napotkano na błędy podczas zapisywania.</p>
+    <?php endif ?>
+
+    <?php if ($this->success && $this->type == 'add-entry'): ?>
+        <form style="display: inline-block" action="/admin/blog" method="POST"><input type="hidden" name="entry-id" value="<?=$this->form_id?>" /><p class="top-notification top-success">Nowy wpis został dodany do bazy. Jeżeli rezygnujesz i chcesz go usunąć, <input type="submit" style="padding:0;margin:0;" class="btn btn-link" name="delete-entry" value="kliknij tutaj" />.</p></form>
+    <?php endif ?>
+        
+    <?php if ($this->success && $this->type == 'edit-entry'): ?>
+        <p class="top-notification top-success">Edytowany wpis został pomyślnie zapisany.</p>
+    <?php endif ?>
+
+
+        
+
+        <div class="page-header">
+          <p><a class="my-light-link" href="/blog/show/<?=$this->form_id?>"><span class="glyphicon glyphicon-eye-open"></span> zobacz ten wpis</a></p>
+            <?php if ($this->type == 'add-entry'): ?>
+                  <h2>Dodawanie wpisu</h2>   
+            <?php endif ?>
+
+            <?php if ($this->type == 'edit-entry'): ?>
+                  <h2>Edycja wpisu</h2>
+            <?php endif ?>
+        </div>    
+
+        
+        
+    <?php echo $this->form()->openTag($form); ?>    
+    <fieldset>
+            
+        <?=$this->formElement($form->get('id'))?>
+        <?=$this->formElement($form->get('author'))?>
+
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('title'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('title'))?>
+                <?=$this->formElementErrors($form->get('title'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('section_id'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('section_id'))?>
+                <?=$this->formElementErrors($form->get('section_id'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('summary'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('summary'))?>
+                <?=$this->formElementErrors($form->get('summary'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('content'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('content'))?>
+                <?=$this->formElementErrors($form->get('content'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+            
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('published'))?></label>
+            <div class="controls">
+                <label style="cursor:pointer"><?=$this->formElement($form->get('published'))?>&nbsp;<span style="font-weight:normal">publikuj</span></label>
+                <?=$this->formElementErrors($form->get('published'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+            
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('photo'))?></label>
+            <div class="controls">
+                <label style="cursor:pointer"><?=$this->formElement($form->get('photo'))?>&nbsp;<input class="btn btn-default" type="button" value="Wyszukaj" onclick="fileManagerPopUp('entry_photo');" />
+                <?=$this->formElementErrors($form->get('photo'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+
+            <script>initMce('entries', <?php echo $this->form_id ?>);</script>
+        <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('submit'))?>
+                <?=$this->formElementErrors($form->get('submit'))?>
+            </div>
+        </div>
+    </fieldset>
+    
+<?php echo $this->form()->closeTag($form); ?>
+</div>
+<?php

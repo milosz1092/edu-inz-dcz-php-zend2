@@ -1,0 +1,50 @@
+<?php
+    $form = $this->form;
+    $form->prepare();
+    $form->setAttribute('action', $this->url(NULL, array('controller' => 'login', 'action' => 'process'))); 
+?>
+
+<div class="container">
+    <?php if ($this->error): ?>
+        <p class="top-notification top-error">Napotkano na błędy podczas logowania.</p>
+    <?php endif ?>
+    
+    <?=$this->form()->openTag($form)?>
+        
+    <div class="page-header">
+      <h2>Logowanie</h2>
+    </div>        
+        
+    <fieldset>
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('email'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('email'))?>
+                <?=$this->formElementErrors($form->get('email'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('password'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('password'))?>
+                <?=$this->formElementErrors($form->get('password'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+    
+        <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('submit'))?>
+                <?=$this->formElementErrors($form->get('submit'))?>
+            </div>
+        </div>
+        
+        <div style="margin-top:20px;">
+                <p>Nie masz swojego konta? <a href="/users/register">Zarejestruj się</a>.</p>
+        </div>
+        
+    </fieldset>
+    <?=$this->form()->closeTag()?>
+
+</div>

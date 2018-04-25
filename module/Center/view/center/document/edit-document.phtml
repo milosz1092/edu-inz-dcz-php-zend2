@@ -1,0 +1,123 @@
+<?php
+    $this->headTitle()->prepend($member->name.' '.$member->surname.' : : ');
+    
+    $this->headScript()->appendFile('/js/chosen.jquery.js');
+    $this->headScript()->appendFile('/js/my_chosen.js');
+    $this->headLink()->appendStylesheet('/css/chosen.css');
+    
+    
+    $form = $this->form;
+    $form->prepare();
+    $form->setAttribute('action', $this->url(NULL, array('controller' => 'Document', 'action' => 'processEditDocument')));
+?>
+    
+
+<div class="container">
+    <div class="notification-area">
+        <?php if ($this->success): ?>
+            <p class="top-notification top-success">Edytowanie zakończone powodzeniem.</p>
+        <?php endif ?>
+            
+        <?php if ($this->error): ?>
+            <p class="top-notification top-error">Błędy podczas edytowania.</p>
+        <?php endif ?>
+    </div>
+    
+    <div class="page-header">
+        <p><a class="my-light-link" href="/center/document/add-files/<?=$this->document_id?>/<?=$this->member["id"]?>"><span class="glyphicon glyphicon-menu-left"></span> zobacz dokument</a></p>
+        <h2>Edytowanie dokumentu <small><?php echo $member->name.'&nbsp;'.$member->surname?></small></h2>
+    </div>
+
+    
+    <?php 
+        echo $this->form()->openTag($form); 
+        ?>
+
+        <?php
+        /*echo '<pre>';
+            var_dump($_SESSION);
+        echo '</pre>';
+        echo '<pre>';
+            var_dump($this->formFileSessionProgress());
+        echo '</pre>';*/
+    ?>
+        <fieldset>
+            <?=$this->formElement($form->get('id'))?>
+            <?=$this->formElement($form->get('id_member')->setValue($this->member["id"]))?>
+
+            <div class="control-group">
+                <label class="control-label"><?=$this->formLabel($form->get('id_type'))?></label>
+                <div class="controls">
+                    <?=$this->formElement($form->get('id_type'))?>
+                    <?=$this->formElementErrors($form->get('id_type'), array('class' => "valid-errors"))?>
+                </div>
+            </div>
+            
+            <div class="control-group" id="specialization-form-group">
+                <label class="control-label"><?=$this->formLabel($form->get('id_specialization'))?></label>
+                <div class="controls">
+                    <?=$this->formElement($form->get('id_specialization'))?>
+                    <?=$this->formElementErrors($form->get('id_specialization'), array('class' => "valid-errors"))?>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label"><?=$this->formLabel($form->get('testing_date'))?> <span style="color:grey;font-weight:normal">(rrrr-mm-dd)</span></label>
+                <div class="controls">
+                    <?=$this->formElement($form->get('testing_date'))?>
+                    <?=$this->formElementErrors($form->get('testing_date'), array('class' => "valid-errors"))?>
+                </div>
+            </div>
+            
+            <div class="control-group" style="max-width:350px;">
+                <label class="control-label"><?=$this->formLabel($form->get('description'))?></label>
+                <div class="controls">
+                    <?=$this->formElement($form->get('description'))?>
+                    <?=$this->formElementErrors($form->get('description'), array('class' => "valid-errors"))?>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label"></label>
+                <div class="controls">
+                    <?=$this->formElement($form->get('submit')->setValue("Edytuj"))?>
+                    <?=$this->formElementErrors($form->get('submit'))?>
+                </div>
+            </div>
+
+        </fieldset>
+    <?php echo $this->form()->closeTag($form); ?>
+
+</div>
+
+<script>
+    $().ready(function() {
+        // validating chosen input
+        document.getElementById('document_type').addEventListener('invalid', function(e) {
+            e.preventDefault();
+            if (!$(".document_type.valid-errors").length)
+                $("#document_type").closest("div").append('<ul class="document_type valid-errors"><li>To pole jest wymagane</li></ul>'); 
+        }, false);
+
+        document.getElementById('document_specialization').addEventListener('invalid', function(e) {
+            e.preventDefault();
+            if (!$(".document_specialization.valid-errors").length)
+                $("#document_specialization").closest("div").append('<ul class="document_specialization valid-errors"><li>To pole jest wymagane</li></ul>'); 
+        }, false);
+
+        $('#document_type').on('change', function(){  
+            if ($(this).val() !== '') {
+                $(".document_type.valid-errors").remove();
+            }
+        });
+
+        $('#document_specialization').on('change', function(){  
+            if ($(this).val() !== '') {
+                $(".document_specialization.valid-errors").remove();
+            }
+        });
+        
+        
+
+    });
+</script>

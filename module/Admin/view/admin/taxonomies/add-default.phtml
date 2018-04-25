@@ -1,0 +1,58 @@
+<?php
+    switch($this->context) {
+        case 'document_type':
+            $this->headTitle()->prepend('Typy dokumentów : : ');
+            $what_add = 'typu dokumentu';
+        break;
+        case 'specialization':
+            $this->headTitle()->prepend('Specjalizacje : : ');
+            $what_add = 'specjalizacji';
+        break;
+        case 'entry_section':
+            $this->headTitle()->prepend('Działy bloga : : ');
+            $what_add = 'dzaiłu bloga';
+        break;
+    }
+
+    $form = $this->form;
+    $form->prepare();
+    $form->setAttribute('action', $this->url(NULL, array('controller' => 'Taxonomies', 'action' => 'processAddDefault')));
+?>
+
+<div class="container">
+<?php if ($this->success): ?>
+    <p class="top-notification top-success">Nowa pozycja została dodana.</p>
+<?php endif ?>
+<?php if ($this->error): ?>
+    <p class="top-notification top-error">Błędy podczas dodwania nowej pozycji.</p>
+<?php endif ?>
+
+<?php echo $this->form()->openTag($form); ?>
+    <div class="page-header">
+        <p><a class="my-light-link" href="/admin/taxonomies/index/<?=$this->context?>"><span class="glyphicon glyphicon-menu-left"></span> powrót do słownika</a></p>
+        <h2>Dodawanie <?=$what_add?></h2>
+    </div>      
+    
+    <fieldset>
+        <input name="context" type="hidden" value="<?=$this->context?>">
+        <?=$this->formElement($form->get('id'))?>
+        
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('name'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('name'))?>
+                <?=$this->formElementErrors($form->get('name'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('submit'))?>
+                <?=$this->formElementErrors($form->get('submit'))?>
+            </div>
+        </div>
+    </fieldset>
+    
+<?php echo $this->form()->closeTag($form); ?>
+</div>

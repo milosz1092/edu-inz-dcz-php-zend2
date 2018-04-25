@@ -1,0 +1,213 @@
+<?php echo $this->doctype(); ?>
+<html lang="pl">
+    <head>
+        <noscript>
+            <?php 
+            if ($this->url() != '/noscript') {
+                echo '<meta http-equiv="refresh" content="0;url=/noscript">';
+                echo '<link rel="canonical" href="/noscript"/>';
+            } 
+            ?>
+        </noscript>
+        <meta charset="utf-8">
+        <?php 
+            $activeElement = $this->navigation('Zend\Navigation\default')->findOneBy('active', 1);
+            echo $this->headTitle($activeElement.' . : : Domowe Centrum Zdrowia');
+        ?>
+
+        <?php echo $this->headMeta()
+            ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+            ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+        ?>
+
+        <!-- Le styles -->
+        <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.png'))
+                        ->prependStylesheet($this->basePath('css/style.css'))
+                        ->prependStylesheet($this->basePath('css/center.css'))
+                        ->prependStylesheet($this->basePath('css/live_chat.css'))
+                        ->prependStylesheet($this->basePath('css/cropbox.css'))
+                        ->prependStylesheet($this->basePath('css/jquery-ui.theme.css'))
+                        ->prependStylesheet($this->basePath('css/jquery-ui.structure.css'))
+                        ->prependStylesheet($this->basePath('css/jquery-ui.css'))
+                        ->prependStylesheet($this->basePath('css/bootstrap-theme.min.css'))
+                        ->prependStylesheet($this->basePath('css/bootstrap.min.css')) 
+                        ->prependStylesheet($this->basePath('css/stacktable.css')) 
+                ?>
+                        
+
+        <!-- Scripts -->
+        <?php echo $this->headScript()
+                
+            ->prependFile($this->basePath('js/ready.js'))
+                
+            ->prependFile($this->basePath('js/live_chat/chat_window.js'))
+                
+            ->prependFile($this->basePath('js/stacktable.js'))
+                
+            ->prependFile($this->basePath('js/require.js'))
+            ->prependFile($this->basePath('js/cropbox.js')) 
+                
+            ->prependFile($this->basePath('js/bootstrap.min.js'))
+                
+            ->prependFile($this->basePath('js/jquery.form.js'))
+            ->prependFile($this->basePath('js/jquery-ui.min.js'))
+            ->prependFile($this->basePath('js/jquery.min.js'))
+            
+                
+            ->prependFile($this->basePath('js/respond.min.js'), 'text/javascript', array('conditional' => 'lt IE 9',))
+            ->prependFile($this->basePath('js/html5shiv.js'),  'text/javascript', array('conditional' => 'lt IE 9',))
+        ; ?>
+
+    </head>
+    <body id="normal_body" style="display:none">
+        <?php //echo '<pre>'.var_dump($_SESSION).'</pre>'; 
+        ?>
+        <script>document.getElementById("normal_body").style.display="block";</script>
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+
+                    <a class="navbar-brand" href="<?php echo $this->url('home') ?>"><img style="height:27px;" src="<?php echo $this->basePath('img/dc-z-logo.png') ?>" alt="dc-z.pl"/></a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <?php
+                            $options = array(
+                                'ulClass' => 'nav navbar-nav',
+                            );
+
+                            echo $this->navigation('Zend\Navigation\normal')
+                                ->setAcl($this->acl)
+                                ->setRole($this->user_role_name)
+                                ->menu()->setPartial('partial/navigation.phtml')
+                                ->setUlClass('nav navbar-nav')
+                                ->render();
+                            
+                            if ($this->user_role == 1) {
+                                echo $this->navigation('Zend\Navigation\offline')
+                                          ->menu()
+                                          ->setUlClass('nav navbar-nav navbar-right')
+                                          ->render();
+                            }
+                            
+                            if ($this->user_role > 1) {
+                            echo $this->navigation('Zend\Navigation\member')
+                                ->setAcl($this->acl)
+                                ->setRole($this->user_role_name)
+                                ->menu()->setPartial('partial/navigation.phtml')
+                                ->setUlClass('nav navbar-nav')
+                                ->render();
+                                
+                                echo $this->navigation('Zend\Navigation\online')
+                                    ->setAcl($this->acl)
+                                    ->setRole($this->user_role_name)
+                                    ->menu()
+                                    ->setUlClass('nav navbar-nav navbar-right')
+                                    ->setPartial('partial/navigation.phtml')
+                                    ->render();
+                    ?>
+                                <p style="margin-right:10px;" class="navbar-text navbar-right">Witaj <a href="#" class="navbar-link"><?=$this->user_email?></a>!</p>
+                    <?php
+                            }
+                    ?>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+        <div class="container">
+            <noscript>
+                <p class="top-notification top-error">Włącz obsługę JavaScript w przeglądarce.</p>
+                <?php
+                if ($this->url() != '/noscript') {
+                    echo '<meta http-equiv="refresh" content="0;url=/noscript">';
+                }
+                ?>
+            </noscript>
+<!-- REQUEST MODAL -->
+<div class="modal fade request-modal" tabindex="-1" role="dialog" aria-labelledby="Etykieta">
+  <div class="modal-dialog modal-sm" role="dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Zamknij"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body">
+          <input type="hidden" id="item_context"/>
+          <p class="request-question"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Anuluj</button>
+        <button type="button" class="btn btn-primary accept-button">Tak</button>
+      </div>
+    </div>
+  </div>
+</div>
+            <?php echo $this->content; ?>
+            <hr>  
+            
+<?php
+
+        if ($this->url() != '/chat/adviser') {
+?>
+            <div id="live_chat">
+                <div class="panel panel-default">
+                        <div class="chat_status" style="display:none"><?php echo $_SESSION['SzewSzcz_chatConnect'];?></div>
+                        <div class="buttons_bar panel-heading"><img class="chat_status_icon" style="height:16px;" src="<?php echo $this->chat_icon; ?>" alt="E.g.: Icon made by Freepik from www.flaticon.com" /><div class="chat_title">Rozmowa z doradcą</div><img class="toggle_button" src="/img/live_chat/arrow_upper.png" /></div>
+                        <div style="display:<?php echo $this->chat_leave ?>" class="leave_chat">OPUŚĆ ROZMOWĘ</div>
+                        <div class="chat_toggle" style="display:<?php echo $_SESSION['SzewSzcz_chatToggle'];?>">
+                                <div class="chat_area">
+                                        <div style="display:<?php echo $this->chat_waiting ?>;color:grey" class="chat_waiting">
+                                                <div style="text-align:center;margin-top:30px;">
+                                                    <img style="height:50px;" src="/img/live_chat/chat_loading_lighter.gif"/>
+                                                </div>
+                                                <div style="text-align:center;margin-top:10px;">
+                                                        <p>PROSZĘ CZEKAĆ</p>
+                                                        <p style="font-size:12px;">USTANAWIAMY POŁĄCZENIE</p>
+                                                        <input style="margin:0;" type="button" class="btn btn-default chat_cancel" value="ANULUJ" />
+                                                </div>
+                                        </div>
+                                        <div style="display:<?php echo $this->chat_normal ?>;" class="chat_normal">
+                                                <div style="text-align:center;margin-top:30px;">
+                                                        <span style="font-size:40px" class="glyphicon glyphicon-envelope"></span>
+                                                </div>
+                                                <div style="text-align:center;margin-top:20px;">
+                                                        <input style="margin:0;" type="button" class="btn btn-success chat_connect" value="POŁĄCZ" />
+                                                </div>
+                                        </div>
+                                        <div style="display:<?php echo $this->chat_connected ?>;" class="chat_connected">
+
+                                        </div>
+                                </div>
+                                <div style="display:none" class="input_area"><textarea placeholder="Wpisz wiadomość..." <?php if ($_SESSION['SzewSzcz_chatConnect'] != 'connected') echo 'disabled="disabled"';?>></textarea></div>
+                        </div>
+                    </div>
+                </div>
+            
+<?php
+        }
+?>
+
+            <footer>
+                <p>
+                    &copy; 2015 - <?php echo date('Y') ?> Miłosz Szewczyk. <?php echo $this->translate('All rights reserved.') ?>
+                </p>
+            </footer>
+        </div> <!-- /container -->
+        <?php echo $this->inlineScript() ?>
+        <div class="my-bottom-breadcrumbs" style="border-radius:0 !important;">
+            <div>Tutaj jesteś: </div>
+            <?php
+                echo $this->navigation('Zend\Navigation\Default')
+                      ->breadcrumbs()
+                      ->setMinDepth(0)
+                      ->setPartial('partial/breadcrumb.phtml');
+            ?>
+            <!--<div style="display:inline-block;float:right;margin-right:10px;">
+                <a href="/users/login"><span style="font-size:31px;" class="glyphicon glyphicon-log-in" aria-hidden="true"></a>
+            </div>-->
+        </div>
+    </body>
+</html>

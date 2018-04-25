@@ -1,0 +1,58 @@
+<?php
+    $form = $this->form;
+    $form->prepare();
+    $form->setAttribute('action', $this->url(NULL, array('controller' => 'Register', 'action' => 'process')));
+?>
+
+<div class="container">
+<?php if ($this->error): ?>
+    <p class="top-notification top-error">Napotkano na błędy podczas rejestracji.</p>
+<?php endif ?>
+
+<?php echo $this->form()->openTag($form); ?>
+    <div class="page-header">
+      <h2>Rejestracja</h2>
+    </div>      
+    
+    <fieldset>
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('email'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('email'))?>
+                <?=$this->formElementErrors($form->get('email'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('password'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('password'))?>
+                <?=$this->formElementErrors($form->get('password'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('confirm_password'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('confirm_password'))?>
+                <?=$this->formElementErrors($form->get('confirm_password'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+        
+
+        
+        <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('submit'))?>
+                <?=$this->formElementErrors($form->get('submit'))?>
+            </div>
+        </div>
+        
+        <div style="margin-top:20px;">
+                <p>Posiadasz już konto? <a href="/users/login">Zaloguj się</a> teraz.</p>
+        </div>
+    </fieldset>
+    
+<?php echo $this->form()->closeTag($form); ?>
+</div>

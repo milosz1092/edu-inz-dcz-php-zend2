@@ -1,0 +1,59 @@
+<div class="page-header">
+  <h2>Blog <small>Lista wpisów</small></h2>
+</div>
+<?php
+    foreach ($this->recent_entries_paginator as $row) {
+        $this->date_time->parseObject($row->created);
+
+        $thumb = '/thumbs'.substr($row->photo, 0, strrpos($row->photo, '/')).'/thumbs'.substr($row->photo, strrpos($row->photo, '/'));
+        
+        //echo $this->date_time->year.'<br />'.$this->prev_year;
+        
+        
+        if ($this->date_time->year != $this->prev_year) {
+            $this->prev_year = $this->date_time->year;
+            $this->prev_month = $this->date_time->month_normal;
+            echo '<div style="clear:both">';
+                echo '<div style="border:none;margin:0;" class="page-header">';
+                  echo '<h3 style="margin-left:20px;">'.$this->prev_year.'<br /><small>'.ucfirst($this->prev_month).'</small></h3>';
+                echo '</div>';
+            echo '</div>';
+            
+            //echo '<div style="clear:both;text-align:center" class="well well-sm"><h4>'.$this->$prev_year.'</h4></div>';
+        }
+        
+        if ($this->date_time->month_normal != $this->prev_month) {
+            $this->prev_month = $this->date_time->month_normal;
+            
+            echo '<div style="clear:both">';
+                echo '<div style="border:none;margin:0;" class="page-header">';
+                  echo '<h3 style="margin-left:20px;"><small>'.ucfirst($this->prev_month).'</small></h3>';
+                echo '</div>';
+            echo '</div>';
+        }
+?>
+        <article>
+            <div style="margin-left:50px;" class="">
+                <h4 style="margin-bottom:0"><a class="" href="blog/show/<?=$row->id?>"><?=$row->title?></a></h4>
+                <p style="margin:0 0 30px 0;color:grey;"><?=$row->summary?></p>
+            </div>
+        </article>
+<?php
+    }
+?>
+
+
+<div style="clear:both" class="row">
+<?php
+    if ($this->recent_entries_paginator->getTotalItemCount() > $this->recent_entries_paginator->getItemCountPerPage()) {
+        
+        echo $this->paginationControl(
+
+        $this->recent_entries_paginator, 'all', 'partial/paginator.phtml',
+            array(
+                'route' => '/blog'
+            )
+        );
+    }
+ ?>
+</div>

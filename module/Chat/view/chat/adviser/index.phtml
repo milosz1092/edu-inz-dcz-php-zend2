@@ -1,0 +1,44 @@
+<?php
+    $this->headScript()->prependFile($this->basePath('js/live_chat/admin_req_list.js'));
+?>
+
+<div class="page-header">
+  <h2>Chat <small>Lista połączeń</small></h2>
+</div>
+
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Oczekujący użytkownicy</div>
+
+    <table class="table table-responsive user-calls">
+    <thead>
+        <tr>
+        
+            <th>Sesja</th>
+            <th>Użytkownik</th>
+            <th>Adres IP</th>
+            <th>Przeglądarka</th>
+            <th>&nbsp;</th>
+        
+        </tr>
+    </thead> 
+
+    <?php foreach($this->calls as $call): ?>
+<?php
+    if ($call->user != $this->auth_id) {
+?>
+    <tr class="call-row" id="row_<?php echo $call->ss_id ?>">
+        <td><?php echo $call->ss_id ?></td>
+        <td><?php echo $call->email?></td>
+        <td><?php echo $call->ip ?></td>
+        <td><?php echo $call->browser ?></td>
+        <td>
+            <a href="<?php echo $this->url('chat/adviser', array('action'=>'receive', 'id' => $call->ss_id));?>" class="btn btn-success" role="button"><span class="glyphicon glyphicon-earphone" aria-hidden="true"></span></a> 
+        </td>
+    </tr>
+<?php
+    }
+?>
+    <?php endforeach; ?>
+    </table>
+</div>

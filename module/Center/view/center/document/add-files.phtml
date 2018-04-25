@@ -1,0 +1,540 @@
+<?php
+    //print_r($this->illnesses);
+    $this->headTitle()->prepend($member->name.' '.$member->surname.' : : ');
+    
+    $this->headScript()->appendFile('/js/chosen.jquery.js');
+    $this->headScript()->appendFile('/js/my_chosen.js');
+    $this->headLink()->appendStylesheet('/css/chosen.css');
+    
+    
+    $form = $this->form;
+    $form->prepare();
+    $form->setAttribute('action', $this->url(NULL, array('controller' => 'Document', 'action' => 'processAddFiles')));
+
+?>
+<input type="hidden" id="pass_member_id" value="<?=$member->id?>" />
+<input type="hidden" id="pass_document_id" value="<?=$document->id?>" />
+
+<div class="container">
+    <div class="notification-area">
+
+    </div>
+    
+    <div class="page-header">
+        <p><a class="my-light-link" href="/center/index/<?=$member->id?>/docs"><span class="glyphicon glyphicon-menu-left"></span> dokumenty profilu</a></p>
+        <h2><?=$this->document->document_type_name?> <small><?=$member->name.'&nbsp;'.$member->surname?></small></h2>
+    </div>
+    
+    <div style="margin-top:10px;" class="page-header">
+        <h2><small><span class="glyphicon glyphicon-info-sign"></span> Informacje</small></h2>
+    </div>
+    <div style="padding-left:10px;font-size:16px">
+        <?php 
+            $this->date_time->parseObject($this->document->testing_date);
+        ?>
+            <div style="margin-top:15px;margin-right:45px;max-width:300px;display:inline-block;"><span>Data:</span><br /><span style="color:grey" id="testing_date"><?=$this->date_time->day?>&nbsp;<?=ucfirst($this->date_time->month_when)?>&nbsp;<?=$this->date_time->year?></span></div>
+        <?php if ($this->document->document_specialization_name != "") { ?>
+            <div style="margin-top:15px;;margin-right:45px;display:inline-block;"><span style="">Specjalista zlecający:</span><br /><span style="color:grey" id="info_id_specialization"><?=mb_strtolower($this->document->document_specialization_name)?></span></div>
+        <?php } ?>
+        <?php if ($this->document->description != "") { ?>
+            <div style="margin-right:45px;max-width:300px;margin-top:15px;display:inline-block;"><span style="">Opis:</span><br /><span style="color:grey" id="description"><?=$this->document->description?></span></div>
+        <?php } ?>
+    </div>
+    
+    
+    
+    <div class="page-header">
+        <h2><small><span class="glyphicon glyphicon-paperclip"></span> Przesłane załączniki</small></h2>
+    </div>
+    <?php
+        echo '<div style="display:none" class="file-box">';
+            echo '<div class="progress-action"><div><img style="height:25px" src="/img/live_chat/chat_loading.gif" alt="Oczekiwanie..." /></div></div>';
+            echo '<a class="download-link" href=""><span style="font-size:20px;margin-bottom:0px;" class="glyphicon glyphicon-save"></span></a>';
+            echo '<p class="file-title"></p>';
+            echo '<div class="doc-file-button remove-file-button" data-context="delete-file" data-toggle="modal" data-target=".request-modal"><div><span class="glyphicon glyphicon-trash"></span></div></div>';
+            echo '<div class="doc-file-button rename-file-button" data-toggle="modal" data-target=".filemane-change-modal"><div><span class="glyphicon glyphicon-edit"></span></div></div>';
+            
+            echo '<a class="doc-file-button preview-file-button" href="#"><div><span class="glyphicon glyphicon-search"></span></div></a>';
+        echo '</div>';
+    ?>
+    <div class="uploaded-files">
+        <?php
+
+        
+            if (count($this->files)) {
+                foreach ($this->files as $key => $file) {
+                    $info = pathinfo($file);
+                    
+                    echo '<div class="file-box">';
+                        echo '<div class="progress-action"><div><img style="height:25px" src="/img/live_chat/chat_loading.gif" alt="Oczekiwanie..." /></div></div>';
+                        echo '<a class="download-link" href="/files/member-doc/'.$this->member->id.'/'.$this->document->id.'/'.$file.'"><span style="font-size:20px;margin-bottom:0px;" class="glyphicon glyphicon-save"></span></a>';
+                        echo '<p class="file-title">'.$file.'</p>';
+                        echo '<div class="doc-file-button remove-file-button" data-context="delete-file" data-toggle="modal" data-target=".request-modal"><div><span class="glyphicon glyphicon-trash"></span></div></div>';
+                        echo '<div class="doc-file-button rename-file-button" data-toggle="modal" data-target=".filemane-change-modal"><div><span class="glyphicon glyphicon-edit"></span></div></div>';
+                        if (in_array(mb_strtolower($info['extension']), \Center\Model\ConstStorage::EXT_IMG)) {
+                            echo '<a class="doc-file-button preview-file-button" href="/files/member-doc-preview/'.$this->member->id.'/'.$this->document->id.'/'.$file.'"><div><span class="glyphicon glyphicon-search"></span></div></a>';
+                        }
+                    echo '</div>';
+                }
+            }
+            else {
+                echo '<p class="empty-text" style="margin-left:30px;font-style:italic">Nie dodano żadnych plików...</p>';
+            }
+        ?>
+    </div>
+
+<div class="modal fade filemane-change-modal" tabindex="-1" role="dialog" aria-labelledby="Etykieta">
+  <div class="modal-dialog" role="dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Zamknij"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel">Zmiana nazwy</h4>
+      </div>
+      <div class="modal-body">
+          <input type="hidden" id="old-filename"/>
+          <div class="form-group">
+            <label for="file-name" class="control-label">Nazwa pliku:</label>
+            <div>
+                <input style="display:inline-block;width:80%;" type="text" value="" class="form-control" id="file-name"><input style="display:inline-block;width:20%;" value="" type="text" disabled="disabled" class="form-control" id="file-extension">
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Anuluj</button>
+        <button type="button" class="btn btn-primary change-filename-button">Zmień</button>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    <div class="page-header">
+        <h2><small><span class="glyphicon glyphicon-upload"></span> Dodawanie plików</small></h2>
+    </div>
+
+    <div class="upload-info" style="">
+        <div class="progress-status">
+            <div class="progress-status"><span style="font-weight:bold">Status:</span> <span class="status"></span></div>
+        </div>
+        <div class="progress" style="max-width:700px;">
+          <div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="">
+            <span class="sr-only">0%</span>
+          </div>
+        </div>
+        <div class="document-info">
+            <div class="col-md-5 files-queue" style="margin-bottom:20px;display:none">
+                <h4>Pliki w kolejce:</h4>
+                <div class="files">
+
+                </div>
+                <a href="/center/document/add-files/<?=$this->document->id?>/<?=$this->member->id?>" style="margin-top:30px;display:none;" role="button" class="add-other-files btn btn-warning">Dodaj inne pliki...</a>
+            </div>
+            
+        </div>
+    </div>
+    
+    <?php 
+        echo $this->form()->openTag($form); 
+        echo $this->FormFileUploadProgress();
+        ?>
+
+        <?php
+        /*echo '<pre>';
+            var_dump($_SESSION);
+        echo '</pre>';
+        echo '<pre>';
+            var_dump($this->formFileSessionProgress());
+        echo '</pre>';*/
+    ?>
+        <fieldset>
+            <?=$this->formElement($form->get('id_document')->setValue($document->id))?>
+            <?=$this->formElement($form->get('id_member')->setValue($member->id))?>
+            
+            <div class="control-group ">
+                <label class="control-label"></label>
+                <div class="controls">
+                    <?=$this->formElement($form->get('files'))?>
+                    <?=$this->formElementErrors($form->get('files'), array('class' => "valid-errors"))?>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">Wybrane pliki</label>
+                <div class="controls chosen-document-files" style="font-style:italic;color:grey;margin-left:10px;">
+                    <span>Nie wybrano żadnych plików.</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label"></label>
+                <div class="controls">
+                    <?=$this->formElement($form->get('submit'))?>
+                    <?=$this->formElementErrors($form->get('submit'))?>
+                </div>
+            </div>
+        </fieldset>
+    <?php echo $this->form()->closeTag($form); ?>
+
+    <div class="page-header" style="display:block;clear:both">
+        <h2><small><span class="glyphicon glyphicon-cog"></span> Operacje dokumentu</small></h2>
+    </div>
+    
+    <form style="min-width:180px;" class="form-horizontal" action="/center/index/<?=$member->id?>/docs" method="POST">
+        <a href="<?php echo '/center/document/edit-document/'.$document->id.'/'.$member->id ?>" style="margin-right:15px;" class="btn btn-primary btn-sm" role="button"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edytuj</a>
+        <input type="hidden" name="id-document" value="<?=$document->id?>" />
+        <button onclick="return confirm('Czy na pewno chcesz usunąć ten dokument?');" type="submit" name="delete-document" class="btn btn-danger btn-sm">
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Usuń
+        </button>
+    </form>
+
+</div>
+<script type="text/javascript" src="/js/member_document.js"></script>
+
+<script>
+// uploading script
+var progressInterval;
+var url = '';
+var last_filename = '';
+upload_max_filesize = <?php echo \Center\Model\ConstStorage::MAX_DOCUMENT_UPLOAD_FILESIZE ?>;
+available_upload_extensions = <?php print_r(json_encode(\Center\Model\ConstStorage::AVAILABLE_UPLOAD_EXTENSIONS)) ?>;
+img_preview_extensions = <?php print_r(json_encode(\Center\Model\ConstStorage::EXT_IMG)) ?>;
+
+
+function getProgress() {
+    // Poll our controller action with the progress id
+    if (url === '') {
+        url = '/center/document/upload-progress/' + $('#progress_key').val();
+        $("#upload-document").remove();
+    }
+    $.getJSON(url, function(data) {
+        console.log(data);
+        
+        if (get_progress_count === 0){
+            last_bytes_uploaded = data.bytes_uploaded;
+            last_file_uploaded = data.filename;
+        }
+        
+        // ----------------------
+        if (last_file_uploaded !== data.filename) {
+            last_files_bytes_uploaded = last_bytes_uploaded;
+        }
+        
+        
+        var mb_uploaded = (data.bytes_uploaded - last_files_bytes_uploaded) / 1048576;
+        console.log(mb_uploaded);
+        if (mb_uploaded > upload_max_filesize) {
+            jqUpload.abort();
+        }
+        
+        last_file_uploaded = data.filename;
+        last_bytes_uploaded = data.bytes_uploaded;
+        // ----------------------
+        
+        //if (data.)
+        if (data.statusText !== "abort") {
+            if (data.upload_id) {
+                var value = Math.floor((data.bytes_uploaded / data.bytes_total) * 100);
+                //console.log(value);
+                showProgress(value, 'Wysyłanie...');
+
+                if (last_filename !== data.filename) {
+                    $('.chosen-document-files').find('.filename').filter(function() {
+                        return $(this).text() === last_filename;
+                    }).find("img.img-file").attr("src", "/img/success.png");
+
+                    last_filename = data.filename;
+                }
+
+                $('.chosen-document-files').find('.filename').filter(function() {
+                    return $(this).text() === data.filename;
+                }).find("img.img-file").show();
+
+            } else {
+                clearInterval(progressInterval);
+            }
+        }
+        
+        if (progressInterval === null)
+            showProgress(0, 'Anulowano wysyłanie!');
+    });
+    
+    get_progress_count++;
+}
+
+function startProgress() {
+    last_bytes_uploaded = 0;
+    last_files_bytes_uploaded = 0;
+    last_file_uploaded = '';
+    get_progress_count = 0;
+
+
+    showProgress(100, 'Wysyłanie...'); //showProgress(0, 'Rozpoczynanie wysyłania...');
+    
+    $("#upload-document input").addClass("disabled");
+    $("#upload-document input").attr("disabled", "disabled");
+    $("#upload-document").hide();
+    $(".img-file").hide();
+    $(".img-file").attr("src", "/img/live_chat/chat_loading.gif");
+    
+    //console.log(jqUpload);
+    
+    //jqUpload.abort();
+    
+    $(".files-queue").show();
+    $(".upload-info .document-info .files").html($('.chosen-document-files'));
+    
+    progressInterval = setInterval(getProgress, 1000);
+}
+
+function showProgress(amount, message) {
+    if (amount == 100 && message == 'Wysyłanie...') {
+        $('.progress .progress-bar').addClass('active');
+        $('.progress .progress-bar').addClass('progress-bar-striped');
+        $('.progress .progress-bar').addClass('progress-bar-info');
+        $('.upload-info').show();
+        $('.progress .progress-bar').css("width", "100%");
+        $('.progress-status > span.status').html(message);
+    }
+    else {
+        $('.upload-info').show();
+        $('.progress .progress-bar').width(amount + '%');
+        $('.progress .progress-bar').text(amount + '%');
+        $('.progress-status > span.status').html(message);
+
+        if (amount < 100) {
+            $('.progress .progress-bar')
+                .addClass('progress-bar-info')
+                .addClass('active')
+                .removeClass('progress-bar-success')
+                .removeClass('progress-bar-warning');
+        } else {
+            $('.progress .progress-bar')
+                .removeClass('progress-bar-info')
+                .removeClass('active');
+        }
+    }
+}
+
+$(function() {
+    // Register a 'submit' event listener on the form to perform the AJAX POST
+
+    $('#upload-document').on('submit', function(e) {
+        e.preventDefault();
+        
+        /*if ($('#image-file').val() === '') {
+            // No files selected, abort
+            return;
+        }*/
+
+        
+        // Perform the submit
+        //$.fn.ajaxSubmit.debug = true;
+        $(this).ajaxSubmit({
+            beforeSend(jqXHR, settings) {
+                jqUpload = jqXHR;
+            },
+            beforeSubmit: function(arr, $form, options) {
+                // Notify backend that submit is via ajax
+                //$form.get(0).setAttribute('action', '/center/document/processAddFiles');
+                arr.push({ name: "isAjax", value: "1" });
+                
+               
+                
+                //document.getElementById('document_type').checkValidity();
+            },
+            success: function (response, statusText, xhr, $form) {
+                last_bytes_uploaded = 0;
+                last_files_bytes_uploaded = 0;
+                last_file_uploaded = '';
+                get_progress_count = 0;
+                
+                //$(document).scrollTop(0);
+                
+                clearInterval(progressInterval);
+                showProgress(100, 'Zakończono wysyłanie!');
+                $(".add-other-files").show();
+                //console.log(response);
+                
+                if (response.uploaded) {
+                    $(".uploaded-files .empty-text").remove();
+
+                    for (var i = 0; i < response.uploaded.length; i++) {
+                        var imgFilename = $('.chosen-document-files .filename div').filter(function() {
+                            return $(this).text() == response.uploaded[i][0];
+                        }).parent("div").children("img");
+                        
+                        var file_box_clone = $(".file-box").first().clone();
+                            if (img_preview_extensions.indexOf(response.uploaded[i][1].split('.').pop().toLowerCase()) < 0) {
+                                file_box_clone.children(".preview-file-button").remove();
+                            } else {
+                                file_box_clone.children(".preview-file-button").attr("href" , "/files/member-doc-preview/<?=$this->member->id?>/<?=$this->document->id?>/"+response.uploaded[i][1]);
+                            }
+                            
+                            file_box_clone.children(".download-link").attr("href", "/files/member-doc/<?=$this->member->id?>/<?=$this->document->id?>/"+response.uploaded[i][1]);
+                            file_box_clone.children(".file-title").text(response.uploaded[i][1]);
+                        file_box_clone.appendTo(".uploaded-files");
+                        file_box_clone.fadeIn(1000);
+
+                        imgFilename.attr("src", "/img/success.png");
+                        imgFilename.show();
+                    }
+                }
+
+                if (response.errors) {
+                    for (var k in response.errors){
+                        var divFilename = $('.chosen-document-files .filename div').filter(function() {
+                            return $(this).text() == k;
+                        }).parent("div");
+
+                        var imgFilename = $('.chosen-document-files .filename div').filter(function() {
+                            return $(this).text() == k;
+                        }).parent("div").children("img");
+
+                        imgFilename.attr("src", "/img/error.png");
+                        imgFilename.show();
+
+                        divFilename.append('<ul class="form-errors"></ul>');
+
+                        for (var i = 0; i < response.errors[k].length; i++) {
+                            divFilename.children(".form-errors").append('<li>'+response.errors[k][i]+'</li>');
+                        }
+                    }
+                }
+                
+                if (response.status === true) {
+                    $('.container .notification-area').prepend('<p class="top-notification top-success">Zakończono dodawanie plików.</p>');
+                    
+                    $('.chosen-document-files .filename img.img-file').show();
+                    $('.chosen-document-files .filename img.img-file').attr("src", "/img/success.png");
+                    
+                    $('.progress .progress-bar').addClass('progress-bar-success');
+                    
+                } else if (response.status === false) {
+                    $('.container .notification-area').prepend('<p class="top-notification top-error">Błędy podczas przesyłania plików.</p>');
+                    $('.progress .progress-bar').addClass('progress-bar-warning');
+                }
+                
+            },
+            error: function(a, b, c) {
+                clearInterval(progressInterval);
+                progressInterval=null;
+                
+                last_bytes_uploaded = 0;
+                last_files_bytes_uploaded = 0;
+                last_file_uploaded = '';
+                get_progress_count = 0;
+
+                $(document).scrollTop(0);
+                // NOTE: This callback is *not* called when the form is invalid.
+                // It is called when the browser is unable to initiate or complete the ajax submit.
+                // You will need to handle validation errors in the 'success' callback.
+                console.log(a, b, c);
+                $('.container .notification-area').prepend('<p class="top-notification top-error">Nie udało się wysłać plików.</p>');
+                $('.progress .progress-bar').addClass('progress-bar-danger');
+                
+                $('.chosen-document-files .filename img.img-file').show();
+                $('.chosen-document-files .filename img.img-file').attr("src", "/img/error.png");
+                
+                $(".progress-status .status").html("Anulowano wysyłanie!");
+            }
+        });
+        // Start the progress polling
+        startProgress();
+    });
+});
+
+$().ready(function() {
+    // document files add - display filelist
+    $('#document_files').on('change', function(){  
+
+        //console.log(this.files);
+        
+        
+        if (this.files.length > 0) {
+            $("form#upload-document input[name=submit]").prop("disabled", false);
+            
+            obj = this.files;
+
+            $('.chosen-document-files').html("");
+
+            var numb = 0;
+            for (var i = 0; i < this.files.length; i++) {
+                numb=i+1;
+                $('.chosen-document-files').append('<div class="filename"><img class="img-file" style="height:18px;margin-right:6px;display:none;width:18px;vertical-align:top" src="/img/live_chat/chat_loading.gif" alt="loading" /><div style="max-width:180px;display:inline-block">'+obj[i].name+'</div></div>');
+            } 
+        } else {
+            $("form#upload-document input[name=submit]").prop("disabled", true);
+        }
+    });
+    
+    $("input[name=submit]").on('click', function(){
+        $(".top-notification").remove();
+        $(".form-errors").remove();
+        
+        var errors = 0;
+        
+        // checking size and extension of files
+        var files_input = document.getElementById("document_files");
+        if ('files' in files_input) {
+            if (files_input.files.length == 0) {
+                // error brak plików
+            } else {
+                var size_ext_errors = 0;
+                for (var i = 0; i < files_input.files.length; i++) {
+                    
+                    var file = files_input.files[i];
+                    
+                    var divFilename = $('.chosen-document-files .filename div').filter(function() {
+                        return $(this).text() == file.name;
+                    }).parent("div");
+
+                    var imgFilename = $('.chosen-document-files .filename div').filter(function() {
+                         return $(this).text() == file.name;
+                    }).parent("div").children("img");
+
+                    divFilename.append('<ul class="form-errors"></ul>');
+                    
+                    if ((file.size / 1048576) > upload_max_filesize) {
+                        size_ext_errors++;
+
+                        divFilename.children(".form-errors").append('<li>Rozmiar pliku przekracza '+upload_max_filesize+'MB</li>');
+                        
+                        imgFilename.attr("src", "/img/error.png");
+                        imgFilename.show();
+                        
+                        errors++;
+                    }
+
+                    if (available_upload_extensions.indexOf(file.name.split('.').pop().toLowerCase()) < 0) {
+                        size_ext_errors++;
+                        
+                        divFilename.children(".form-errors").append('<li>Nieobsługiwane rozszerzenie pliku</li>');
+                        
+                        imgFilename.attr("src", "/img/error.png");
+                        imgFilename.show();
+                        
+                        errors++;
+                    }
+                    
+                    //console.log(file);
+                }
+                
+                if (size_ext_errors > 0) {
+                    $('.container .notification-area').prepend('<p class="top-notification top-error">Pliki nie spełniają wymagań.</p>');
+                }
+            }
+        }
+        
+        // validation html5 form (isset files) before submit
+        if(!$("form#upload-document")[0].checkValidity()) {
+            errors++;
+            $('.container .notification-area').prepend('<p class="top-notification top-error">Musisz wybrać pliki z komputera.</p>');
+        }
+
+        if (errors === 0) {
+            $("form#upload-document").submit();
+        } else {
+            $(document).scrollTop(0);
+        }
+    });
+});
+</script>

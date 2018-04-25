@@ -1,0 +1,13 @@
+<div class="page-header">
+  <h2>Panel użytkownika</h2>
+</div>
+<?php 
+if ($this->user_role == 1) { 
+?>
+    <a href="users/login">Logwanie</a> | <a href="users/register">Rejestracja</a>
+<?php 
+} 
+else if ($this->user_role > 1) {
+?>
+    <a href="users/logout">Wyloguj się</a>
+<?php } ?>

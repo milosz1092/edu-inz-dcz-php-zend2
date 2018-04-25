@@ -1,0 +1,156 @@
+<?php if ($this->deleteSuccess): ?>
+    <p class="top-notification top-success">Usuwanie zakończone powodzeniem.</p>
+<?php endif ?>
+    
+<?php if (isset($this->deleteSuccess) && $this->deleteSuccess == false): ?>
+    <p class="top-notification top-error">Błędy podczas usuwania pozycji ze słownika.</p>
+<?php endif ?>
+
+
+<div class="page-header">
+  <h2>Taksonomie <small>Zarządzanie</small></h2>
+</div>
+
+<ul class="nav nav-tabs" style="margin-bottom:20px">
+    <li class="<?php if ($this->context == 'illness') echo 'active ' ?>" role="presentation">
+        <a href="/admin/taxonomies/index/illness">Choroby</a>
+    </li>
+    <!--<li class="<?php if ($this->context == 'medicine') echo 'active ' ?>" role="presentation">
+        <a href="/admin/taxonomies/index/medicine">Leki</a>
+    </li>-->
+    <li class="<?php if ($this->context == 'specialization') echo 'active ' ?>" role="presentation">
+        <a href="/admin/taxonomies/index/specialization">Specjalizajce</a>
+    </li>
+    <li class="<?php if ($this->context == 'document_type') echo 'active ' ?>" role="presentation">
+        <a href="/admin/taxonomies/index/document_type">Typy dokumentów</a>
+    </li>
+    <li class="<?php if ($this->context == 'entry_section') echo 'active ' ?>" role="presentation">
+        <a href="/admin/taxonomies/index/entry_section">Działy bloga</a>
+    </li>
+</ul>
+
+<?php
+    switch($this->context) {
+        case 'illness':
+            $this->headTitle()->prepend('Choroby : : ');
+        break;
+        case 'medicine':
+            $this->headTitle()->prepend('Leki : : ');
+        break;
+        case 'document_type':
+            $this->headTitle()->prepend('Typy dokumentów : : ');
+        break;
+        case 'specialization':
+            $this->headTitle()->prepend('Specjalizacje : : ');
+        break;
+        case 'entry_section':
+            $this->headTitle()->prepend('Działy bloga : : ');
+        break;
+    }
+    
+    
+    if (in_array($this->context, array('illness', 'medicine'))) {
+        // specyfic medical taxonomies id, name, latin_name, description
+?>
+            <div class="panel panel-default">
+              <!-- Default panel contents -->
+              <div class="panel-heading">Dodane do bazy</div>
+
+                <table class="<?php echo $this->context ?>-table table table-responsive">
+                <thead>
+                    <tr>
+                        <th>Nazwa</th>
+                        <th>Nazwa łacińska</th>
+                        <th>Opis</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead> 
+
+                <?php foreach($this->paginator as $medical): ?>
+                <tr>
+                    <td><?php echo $this->escapeHtml($medical->name);?></td>
+                    <td><?php echo $medical->latin_name?></td>
+                    <td><?php echo $this->escapeHtml($medical->description);?></td>
+                    <td>
+                        <div>
+                        <form style="min-width:180px;" class="form-horizontal" action="<?=$_SERVER['REQUEST_URI']?>" method="POST">
+                            <a href="<?php echo '/admin/taxonomies/edit-medical/'.$medical->id.'/page/'.$this->context ?>" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edytuj</a>
+                            <input type="hidden" name="tax-id" value="<?=$medical->id?>" />
+                            <button onclick="return confirm('Czy na pewno chcesz usunąć?');" type="submit" name="delete-tax" class="btn btn-warning">
+                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                            </button>
+                        </form>
+                        </div>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+                </table>
+            </div>
+            <div style="clear:both" class="row">
+            <?php
+                if ($this->paginator->getTotalItemCount() > $this->paginator->getItemCountPerPage()) {
+
+                    echo $this->paginationControl(
+
+                    $this->paginator, 'all', 'partial/paginator.phtml',
+                        array(
+                            'route' => '/admin/taxonomies/index/'.$this->context,
+                        )
+                    );
+                }
+             ?>
+            </div>
+            <a href="/admin/taxonomies/add-medical/<?=$this->context?>" class="btn btn-success" role="button"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Dodaj</a> 
+<?php
+    }
+    else {
+        // default taxonomies id, name
+?>
+            <div class="panel panel-default">
+              <!-- Default panel contents -->
+              <div class="panel-heading">Dodane do bazy</div>
+
+                <table class="<?php echo $this->context ?>-table table table-responsive">
+                <thead>
+                    <tr>
+                        <th>Nazwa</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead> 
+
+                <?php foreach($this->paginator as $tax): ?>
+                <tr>
+                    <td><?php echo $this->escapeHtml($tax->name);?></td>
+                    <td>
+                        <div>
+                        <form style="min-width:180px;" class="form-horizontal" action="<?=$_SERVER['REQUEST_URI']?>" method="POST">
+                            <a href="<?php echo '/admin/taxonomies/edit-default/'.$tax->id.'/page/'.$this->context ?>" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edytuj</a>
+                            <input type="hidden" name="tax-id" value="<?=$tax->id?>" />
+                            <button onclick="return confirm('Czy na pewno chcesz usunąć?');" type="submit" name="delete-tax" class="btn btn-warning">
+                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                            </button>
+                        </form>
+                        </div>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+                </table>
+            </div>
+            <div style="clear:both" class="row">
+            <?php
+                if ($this->paginator->getTotalItemCount() > $this->paginator->getItemCountPerPage()) {
+
+                    echo $this->paginationControl(
+
+                    $this->paginator, 'all', 'partial/paginator.phtml',
+                        array(
+                            'route' => '/admin/taxonomies/index/'.$this->context,
+                        )
+                    );
+                }
+             ?>
+            </div>
+            <a href="/admin/taxonomies/add-default/<?=$this->context?>" class="btn btn-success" role="button"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Dodaj</a> 
+<?php
+    }
+?>

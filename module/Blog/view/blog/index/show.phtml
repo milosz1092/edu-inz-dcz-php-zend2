@@ -1,0 +1,72 @@
+<?php
+    $this->headTitle()->prepend($this->entry->title.' : : ');
+    
+    if (!$this->prev) {
+        $block_prev = 'disabled';
+        $link_prev = '/blog/show/#';
+    }
+    else {
+        $block_prev = '';
+        $link_prev = '/blog/show/'.$this->prev->id;
+    }
+        
+    if (!$this->next) {
+        $block_next = 'disabled';
+        $link_next = '/blog/show/#';
+    }
+    else {
+        $block_next = '';
+        $link_next = '/blog/show/'.$this->next->id;
+    }
+?>
+<div class="entry">
+    <article>
+        <header>
+            <div class="page-header" style="border-bottom:none">
+                <p><a class="my-light-link" href="/blog"><span class="glyphicon glyphicon-menu-left"></span> przejdź do listy wpisów</a></p>
+                <h2 style="margin-bottom:20px"><?=$this->entry->title?></h2>
+                
+                <img src="/img/user_icon.png" alt="user" style="display:inline-block;margin-right:7px;" />
+                <div class="entry-info">
+                    <strong><?=$this->author['email']?></strong><br />
+                    <time><?=$this->date_time->day?> <?=ucfirst($this->date_time->month_when)?> <?=$this->date_time->year?>, <?=$this->date_time->hour?>:<?=$this->date_time->min?></time>
+                </div>
+                
+                <?php if ($this->enableEdit) { ?>
+                    <div class="edit-button">
+                        <a href="/admin/blog/edit-entry/<?= $this->entry->id ?>"><span style="font-size:16px;color:#666" class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edytuj wpis</a>
+                    </div>
+                <?php } ?>
+            </div>
+            
+        </header>
+        <div class="entry-content">
+            <?=$this->entry->content?>
+        </div>
+    </article>
+</div>
+<hr />
+<div class="row next-prev-entry-nav-sm my-lr-lav">
+    <?php
+        echo '<a class="btn btn-link pull-left '.$block_prev.'" href="'.$link_prev.'"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Poprzedni</a>';
+        echo '<a class="btn btn-link pull-right '.$block_next.'" href="'.$link_next.'">Następny <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>';
+    ?>
+</div>
+<div class="row next-prev-entry-nav my-lr-lav">
+    <?php
+        if ($this->prev)
+            echo '<a class="btn btn-link pull-left '.$block_prev.'" href="'.$link_prev.'"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> '.$this->prev->title.'</a>';
+        else
+            echo '<a class="btn btn-link pull-left '.$block_prev.'" href="'.$link_prev.'"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Poprzedni</a>';
+        if ($this->next)
+            echo '<a class="btn btn-link pull-right '.$block_next.'" href="'.$link_next.'">'.$this->next->title.' <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>';
+        else
+            echo '<a class="btn btn-link pull-right '.$block_next.'" href="'.$link_next.'">Następny <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>';
+    ?>
+</div>
+
+<?php
+    //echo '<pre>';
+    //print_r($this->entry);
+    // echo '</pre>';
+?>

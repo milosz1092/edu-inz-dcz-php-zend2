@@ -1,0 +1,8 @@
+#add-entry-form textarea[name="summary"] {
+    width:100%;
+    height:100px;
+}
+
+#add-entry-form input[name="title"] {
+    width:100%;
+}

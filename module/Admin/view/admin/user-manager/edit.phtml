@@ -1,0 +1,62 @@
+<?php
+    $this->headScript()->appendFile('/js/chosen.jquery.js');
+    $this->headScript()->appendFile('/js/my_chosen.js');
+    $this->headLink()->appendStylesheet('/css/chosen.css');
+?>
+
+<?php if ($this->error): ?>
+    <p class="top-notification top-error">Edycja użytkownika zakończona niepowodzeniem.</p>
+<?php endif ?>
+
+<section>
+<?php 
+    $form = $this->form;
+    $form->prepare();
+    $form->setAttribute('action', $this->url('admin/user-manager', array('action' => 'process')));
+    $form->setAttribute('method', 'post');
+?>
+    
+<div class="page-header">
+  <h2>Edycja użytkownika</h2>
+</div>    
+    
+<fieldset>
+    
+    <?php echo $this->form()->openTag($form); ?>
+        <?php echo $this->formElement($form->get('id')); ?>
+
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('email'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('email'));?>
+                <?=$this->formElementErrors($form->get('email'), array('class' => "valid-errors"));?>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('new_password'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('new_password'));?>
+                <?=$this->formElementErrors($form->get('new_password'), array('class' => "valid-errors"));?>
+            </div>
+        </div>
+    
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('role'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('role'));?>
+                <?=$this->formElementErrors($form->get('role'), array('class' => "valid-errors"));?>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('submit'))?>
+                <?=$this->formElementErrors($form->get('submit'))?>
+            </div>
+        </div>
+    <?php echo $this->form()->closeTag() ?>
+</fieldset>
+    
+</section>

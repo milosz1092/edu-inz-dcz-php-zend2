@@ -1,0 +1,57 @@
+<?php
+    $this->headScript()->prependFile($this->basePath('js/live_chat/admin_chat.js'));
+?>
+
+<div class="page-header">
+  <p><a class="leave_chat_admin my-light-link" href="/chat/adviser"><span class="glyphicon glyphicon-menu-left"></span> zakończ rozmowę</a></p>
+  <h2>Chat <small>Połączenie</small></h2>
+</div>
+
+<div class="col-md-6" id="live_chat_admin">
+    <div class="panel panel-default">
+        <div class="panel-heading">Rozmowa z klientem</div>
+        <div class="chat_ssid" style="display:none"><?php echo $this->ss_id;?></div>
+        <div class="chat_status" style="display:none"><?php echo $_SESSION['SzewSzcz_chatAdminConnect'];?></div>
+
+        <div class="chat_toggle" style="display:block;">
+            <div class="chat_area">
+                <div style="display:<?php echo $this->chat_waiting ?>;color:grey;" class="chat_waiting">
+                    <div style="text-align:center;margin-top:60px;">
+                            <img style="height:50px;" src="/img/live_chat/chat_loading_lighter.gif" />
+                    </div>
+                    <div style="text-align:center;margin-top:10px;">
+                            <p>PROSZĘ CZEKAĆ</p>
+                            <p style="font-size:11px;">KLIENT OPUŚCIŁ ROZMOWĘ</p>  
+                    </div>
+                </div>
+
+                <div style="display:<?php echo $this->chat_connected ?>" class="chat_connected">
+
+                </div>
+            </div>
+            <div style="display:none" class="input_area"><textarea placeholder="Wpisz wiadomość..." <?php if ($_SESSION['SzewSzcz_chatAdminConnect'] != 'connected') echo 'disabled="disabled"';?>></textarea></div>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-md-5" id="session_chat_admin_info">
+    <div class="panel panel-default">
+        <div class="panel-heading">Informacje</div>
+        <table class="table chat-session-info">
+            <tr>
+                <td><strong>Indeks:</strong> <?=$this->ss_info->ss_id?></td>
+            </tr>
+            <?php if ($this->ss_info->role == 2) echo '<tr><td><strong>Status:</strong> zalogowany</td></tr>'; ?>
+            <?php if ($this->ss_info->email != '') echo '<tr><td><strong>Adres e-mail:</strong> '.$this->ss_info->email.'</td></tr>'; ?>
+            <tr>
+                <td><strong>Adres IP:</strong> <?php echo $this->ss_info->ip; ?></td>
+            </tr>
+            <tr>
+                <td><strong>Przeglądarka:</strong> <?php echo $this->ss_info->browser; ?></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="row"></div>

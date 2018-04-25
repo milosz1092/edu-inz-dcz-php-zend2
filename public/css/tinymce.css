@@ -1,0 +1,16 @@
+body {
+    font-size:18px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    line-height: 27px;
+    text-align: justify;		    			
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+}
+.red-cite {
+    color:red;
+}
+.bible-cite {
+    color:#333399;
+}

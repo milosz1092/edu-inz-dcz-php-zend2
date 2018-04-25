@@ -1,0 +1,33 @@
+<div class="page-header">
+  <h2>Użytkownicy <small>Zarządzanie</small></h2>
+</div>
+
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Zarejestrowani w systemie</div>
+
+    <table class="user-table table table-responsive">
+    <thead>
+        <tr>
+        
+            <th>E-mail</th>
+            <th>Hasło</th>
+            <th>Prawa</th>
+            <th>&nbsp;</th>
+        
+        </tr>
+    </thead> 
+
+    <?php foreach($users as $user): ?>
+    <tr>
+        <td><?php echo $this->escapeHtml($user->email);?></td>
+        <td><?php echo substr($this->escapeHtml($user->password),1,10);?>(...)</td>
+        <td><?php echo $this->escapeHtml($user->role);?></td>
+        <td>
+            <a href="<?php echo $this->url('admin/user-manager', array('action'=>'edit', 'id' => $user->id));?>" class="btn btn-primary" role="button">Edytuj</a> 
+            <a href="<?php echo $this->url('admin/user-manager', array('action'=>'delete', 'id' => $user->id));?>" class="btn btn-warning" role="button" onclick="return confirm('Czy na pewno chcesz usunąć użytkownika?')">Usuń</a>
+        </td>
+    </tr>
+    <?php endforeach; ?>
+    </table>
+</div>

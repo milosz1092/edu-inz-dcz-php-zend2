@@ -1,0 +1,83 @@
+<?php
+    $form = $this->form;
+    $form->prepare();
+    $form->setAttribute('action', $this->url(NULL, array('controller' => 'Member', 'action' => 'processCreateMember')));
+?>
+
+<div class="container">
+<?php if ($this->success): ?>
+    <p class="top-notification top-success">Nowa osoba została dodana. Jeżeli chcesz uzupełnić szczegółowe informacje, <a href="/center/member/profile-edit/<?php echo $this->created_member_id; ?>">kliknij tutaj</a>.</p>
+<?php endif ?>
+<?php if ($this->error): ?>
+    <p class="top-notification top-error">Błędy podczas dodwania osoby.</p>
+<?php endif ?>
+
+<div class="page-header">
+    <p><a class="my-light-link" href="/center"><span class="glyphicon glyphicon-menu-left"></span> powrót do centrum</a></p>
+    <h2>Dodawanie osoby</h2>
+</div>   
+    
+<?php echo $this->form()->openTag($form); ?>
+   
+    
+    <fieldset>
+        <?=$this->formElement($form->get('id'))?>
+        
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('name'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('name'))?>
+                <?=$this->formElementErrors($form->get('name'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('surname'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('surname'))?>
+                <?=$this->formElementErrors($form->get('surname'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('sex'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('sex'))?>
+                <?=$this->formElementErrors($form->get('sex'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('birth'))?> <span style="color:grey;font-weight:normal">(rrrr-mm-dd)</span></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('birth'))?>
+                <?=$this->formElementErrors($form->get('birth'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('growth'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('growth'))?> cm
+                <?=$this->formElementErrors($form->get('growth'), array('class' => "valid-errors"))?>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label"><?=$this->formLabel($form->get('weight'))?></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('weight'))?> kg
+                <?=$this->formElementErrors($form->get('weight'), array('class' => "valid-errors"))?>
+            </div>
+        </div>        
+        <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+                <?=$this->formElement($form->get('submit'))?>
+                <?=$this->formElementErrors($form->get('submit'))?>
+            </div>
+        </div>
+    </fieldset>
+    
+<?php echo $this->form()->closeTag($form); ?>
+</div>
